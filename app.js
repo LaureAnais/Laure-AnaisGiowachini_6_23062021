@@ -7,10 +7,11 @@ const app = express();
 
 const userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb+srv://lagiowachini:uyjlte5dSGio!MO@cluster0.iigxy.mongodb.net/myFirstDatabase?retryWrites=true&w=majorit',
-  { useCreateIndex: true,
+mongoose.connect(process.env.DB_URI, { 
+    useCreateIndex: true,
     useNewUrlParser: true,
-    useUnifiedTopology: true })
+    useUnifiedTopology: true 
+})
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
   });
 
 app.use(bodyParser.json());  
-app.use('/api/auth',userRoutes);
+app.use('/api/auth', userRoutes);
 
 
 // pour utiliser notre application express depuis notre serveur node

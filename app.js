@@ -2,18 +2,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-// créer une application express 
-const app = express();
+const saucesRoutes = require('./models/sauces')
 
 const userRoutes = require('./routes/user');
 
-mongoose.connect(process.env.DB_URI, { 
+mongoose.connect('mongodb+srv://lagiowachini:uyjlte5dSGio!MO@cluster0.iigxy.mongodb.net/myFirstDatabase?retryWrites=true&w=majorit', { 
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true 
 })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+// créer une application express 
+const app = express();
 
 
 app.use((req, res, next) => {
@@ -24,6 +26,7 @@ app.use((req, res, next) => {
   });
 
 app.use(bodyParser.json());  
+app.use('/api/sauces', saucesRoutes),
 app.use('/api/auth', userRoutes);
 
 

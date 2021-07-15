@@ -2,20 +2,21 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const saucesRoutes = require('./models/sauces')
+// créer une application express 
+const app = express();
+
+// const saucesRoutes = require('./routes/sauces');
 
 const userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb+srv://lagiowachini:uyjlte5dSGio!MO@cluster0.iigxy.mongodb.net/myFirstDatabase?retryWrites=true&w=majorit', { 
-    useCreateIndex: true,
+mongoose.connect('mongodb+srv://projet6:projet6.OC!2021@cluster0.iigxy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { 
     useNewUrlParser: true,
     useUnifiedTopology: true 
 })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-// créer une application express 
-const app = express();
+
 
 
 app.use((req, res, next) => {
@@ -26,8 +27,16 @@ app.use((req, res, next) => {
   });
 
 app.use(bodyParser.json());  
-app.use('/api/sauces', saucesRoutes),
-app.use('/api/auth', userRoutes);
+
+app.post('/api/sauces', (req, res, next) => {
+  console.log(req.body);
+  res.status(201).json({
+    message: 'Sauce créée !'
+  });
+});
+
+ app.use('/api/sauces', saucesRoutes),
+app.use("/api/auth", userRoutes);
 
 
 // pour utiliser notre application express depuis notre serveur node

@@ -5,7 +5,9 @@ const mongoose = require('mongoose');
 // créer une application express 
 const app = express();
 
-// const saucesRoutes = require('./routes/sauces');
+const sauces = require('./models/sauces');
+
+const saucesRoutes = require('./routes/sauces');
 
 const userRoutes = require('./routes/user');
 
@@ -35,7 +37,9 @@ app.post('/api/sauces', (req, res, next) => {
   });
 });
 
- app.use('/api/sauces', saucesRoutes),
+// app.get doit nécessairement être après app.post pour ne pas bloquer app.post
+
+app.use('/api/sauces', saucesRoutes),
 app.use("/api/auth", userRoutes);
 
 

@@ -36,6 +36,7 @@ const saucesSchema = mongoose.Schema({
         required: true
     },
 
+    // champ non obligatoire
     likes: {
         type: Number, 
     },
@@ -52,6 +53,6 @@ const saucesSchema = mongoose.Schema({
         type: [String], 
     },
 
-})
+});
 
-module.exports = mongoose.model('sauces', saucesSchema);
+module.exports = mongoose.model('sauces', saucesSchema); 

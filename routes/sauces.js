@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 const auth = require('../middleware/auth');
+const multer = require('../middleware/multer-config');
 
-// problème créer controllers/sauces
-const saucesCtrl = require('../controllers/sauces');
+const sauceCtrl = require('../controllers/sauces');
 
-// Revoir les routes car sauces.js et non stuff.js
-router.get('/', auth, saucesCtrl.getAllSauces);
-router.post('/', auth, saucesCtrl.createSauce);
-router.get('/:id', auth, saucesCtrl.getOneSauce);
-router.put('/:id', auth, saucesCtrl.modifySauce);
-router.delete('/:id', auth, saucesCtrl.deleteSauce);
+// vérification de la requête avant son enregistrement 
+router.post('/', auth, multer, sauceCtrl.createSauce);
+router.put('/:id', auth, multer, sauceCtrl.modifySauce);
+router.delete('/:id', auth, sauceCtrl.deleteSauce);
+router.get('/', auth, sauceCtrl.getAllSauces);
+router.get('/:id', auth, sauceCtrl.getOneSauce);
 
 module.exports = router; 

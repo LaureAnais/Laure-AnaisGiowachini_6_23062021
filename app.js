@@ -1,15 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
 
-// créer une application express 
-const app = express();
-
-const sauces = require('./models/sauces');
+require('dotenv').config({ path: process.cwd() + '/.env' });
 
 const saucesRoutes = require('./routes/sauces');
 
 const userRoutes = require('./routes/user');
+
+// créer une application express 
+const app = express();
 
 mongoose.connect('mongodb+srv://projet6:projet6.OC!2021@cluster0.iigxy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { 
     useNewUrlParser: true,
@@ -19,8 +20,6 @@ mongoose.connect('mongodb+srv://projet6:projet6.OC!2021@cluster0.iigxy.mongodb.n
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -28,19 +27,14 @@ app.use((req, res, next) => {
     next();
   });
 
-app.use(bodyParser.json());  
-
-app.post('/api/sauces', (req, res, next) => {
-  console.log(req.body);
-  res.status(201).json({
-    message: 'Sauce créée !'
-  });
-});
+  app.use(bodyParser.json()); 
 
 // app.get doit nécessairement être après app.post pour ne pas bloquer app.post
 
-app.use('/api/sauces', saucesRoutes),
-app.use("/api/auth", userRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use('/api/sauces', saucesRoutes); 
+app.use('/api/auth', userRoutes);
 
 
 // pour utiliser notre application express depuis notre serveur node

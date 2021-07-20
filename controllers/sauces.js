@@ -28,7 +28,10 @@ exports.createSauce = (req, res, next) => {
  
 // Récupérer une seule sauce 
 exports.getOneSauce = (req, res, next) => {
-    Sauce.findOne({_id:req.params.id})
+  // On récupère l'id des paramètres de route
+    Sauce.findOne({
+      _id:req.params.id
+    })
         .then(sauce => res.status(201).json({sauce}))
         .catch(error => res.status(404).json({ error }));
 
@@ -36,24 +39,30 @@ exports.getOneSauce = (req, res, next) => {
 
 // Obtenir toutes les sauces - renvoie le tableau de toutes les sauces présentes dans la base de données
 exports.getAllSauces = (req, res, next) => {
-    // On récupère l'id des paramètres de route
-    Sauce.find()
-    .then(sauces => res.status(200).json({sauces}))
-    .catch(error => res.status(400).json({ error })); 
-}; 
+  Sauce.find()
+    .then((sauces) => {
+      res.status(200).json(sauces);
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+    });
+};
+ 
 
 
 // Modifier une sauce 
 exports.modifySauce = (req, res, next) => {
     // si req.file existe (il y a déjà une image enregistrée mais on souhaite la modifiée), il faut le prendre en compte. On récupère avec JSON.parse les informations et on va générer l'image URL (car il s'agit d'une nouvelle image)
-    const sauceObject = req.file ?
-        {
-          ...JSON.parse(req.body.sauce),
-          imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ...req.body };
+    const sauceObject = req.file ? {
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
+    
     Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
-        .catch(error => res.status(400).json({ error }));   
+      .then(() => res.status(200).json({ message: 'sauce modifiée !' }))
+      .catch(error => res.status(400).json({error}));
 };
 
 // Supprimer une sauce 
@@ -70,4 +79,3 @@ exports.deleteSauce = (req, res, next) => {
       .catch(error => res.status(500).json({ error }));
   };
 
-// ajouter la gestion des likes via exports 

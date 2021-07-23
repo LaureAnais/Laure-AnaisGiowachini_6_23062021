@@ -7,7 +7,7 @@ const fs = require('fs');
 exports.getOneSauce = (req, res, next) => {
   // On récupère l'id des paramètres de route
     Sauce.findOne({ _id:req.params.id})
-        .then(sauce => res.status(200).json({sauce}))
+        .then(sauce => {console.log(sauce); res.status(200).json({sauce})})
         .catch(error => res.status(404).json({ error }));
 };
 
@@ -24,6 +24,7 @@ exports.createSauce = (req, res, next) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`, 
         likes: 0,
         dislikes: 0,
+      
     });
     // sauvegarde la sauce dans la base de données 
     sauce.save()

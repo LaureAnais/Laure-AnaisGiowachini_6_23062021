@@ -61,14 +61,10 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
       .then((sauce) => {
-        if (sauce.userId !== req.user) {  // vérification que l'auteur de la sauce est bien celui qui souhaite la supprimer 
-          res.status(401).json({message: "action non autorisée"});  // si ce ne sont pas le cas (id différent) // non autorisé
-          return sauce;
-        } 
         const filename = sauce.imageUrl.split('/images/')[1];
         fs.unlink(`images/${filename}`, () => {
           Sauce.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Sauce supprimé !'}))
+          .then(() => res.status(200).json({ message: 'Sauce supprimée !'}))
           .catch(error => res.status(400).json({ error }));
       });
     })
@@ -79,16 +75,33 @@ exports.deleteSauce = (req, res, next) => {
 exports.likeDislike = (req, res, next) => {
   if (req.body.like === 1)
   // Création d'un like (avoir 1 sauce / 1 utilisateur (userId) / agrémenter la sauce d'un like)
-    Sauce.updateOne({_id: req.params.id} , {$inc: {likes: req.body.likes++ } , $push : {usersLiked: req.body.userId} })
+  // $inc : The inc operator increments a field by a specified value => like ++ 
+    Sauce.updateOne({_id: req.params.id} , {$inc: {likes: 1 } , $set : {usersLiked: req.body.userId} })
     .then(() => res.status(200).json({ message: 'Sauce likée !'}))
     .catch((error) => {res.status(404).json({error});});
 
-   else (req.body.like === -1) 
+   // Si l'utilisateur ne veut pas liker / Alors il veut dislike => ELSE IF 
+   else if (req.body.like === -1) 
    // Création d'un dislike (on retire 1 like à 1 sauce)
-    Sauce.updateOne({_id: req.params.id} , {$inc: {dislikes: req.body.dislikes-- } , $pull: {usersLiked: req.body.userId} })
+    // Dislike : -1 ou -- comme like est à 0 en 1er 
+    Sauce.updateOne({_id: req.params.id} , {$inc: {dislikes: 1 } , $set: {usersDisliked: req.body.userId} })
     .then(() => res.status(200).json({ message: 'Un dislike ajouté :( '}))
     .catch((error) => {res.status(404).json({error});});
 
-  // comment retirer un like ajouté par erreur et idem pour un dislike 
+   else {
+    Sauce.findOne({ _id: req.params.id })
+    .then(sauce => { 
+      if (sauce.usersLiked.includes(req.body.userId)) { 
+        Sauce.updateOne({_id: req.params.id} , {$inc: {likes: -1 } , $pull: {usersLiked: req.body.userId} })
+          .then(() => res.status(200).json({ message: 'Un like enlevé :( '}))
+          .catch((error) => {res.status(404).json({error});});
+      }
+      else {
+        Sauce.updateOne({_id: req.params.id} , {$inc: {dislikes: -1 } , $pull: {usersDisliked: req.body.userId} })
+          .then(() => res.status(200).json({ message: 'Un dislike enlevé :) '}))
+          .catch((error) => {res.status(404).json({error});});
+      }
+    })
+   } 
 
-};
+}; 

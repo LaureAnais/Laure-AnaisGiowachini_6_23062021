@@ -2,12 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-
+const helmet = require('helmet');
 
 // créer une application express 
 const app = express();
 
-mongoose.connect('mongodb+srv://projet6:projet6.OC!2021@cluster0.iigxy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { 
+// Utilisation de 'dotenv' pour masquer les informations de connexion via les variables environnements 
+require('dotenv').config();
+
+mongoose.connect(process.env.DB, { 
     useNewUrlParser: true,
     useUnifiedTopology: true 
 })
@@ -23,11 +26,14 @@ app.use((req, res, next) => {
     next();
   });
 
-  app.use(bodyParser.json()); 
+app.use(bodyParser.json()); 
 
 // app.get doit nécessairement être après app.post pour ne pas bloquer app.post
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// Utilisation helmet pour protéger l'application de certaines vulnérabilités du Web en configurant les en-têtes HTTP
+app.use(helmet());
 
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');

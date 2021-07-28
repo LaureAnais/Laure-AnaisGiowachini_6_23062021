@@ -7,18 +7,27 @@ const helmet = require('helmet');
 // créer une application express 
 const app = express();
 
+// Crypto sha512 
+// let hash = CryptoJS.SHA512("Message");
+
+// Crypto ou CryptoJS??
+let CryptoJS = require("crypto");
+
+let sha512 = CryptoJS.createHash('sha512').update('Projet6Piment').digest('hex');
+console.log(sha512);
+
 // Utilisation de 'dotenv' pour masquer les informations de connexion via les variables environnements 
 require('dotenv').config();
 
-mongoose.connect(process.env.DB, { 
+mongoose.connect(process.env.DB, {
+
     useNewUrlParser: true,
-    useUnifiedTopology: true 
-})
+    useUnifiedTopology: true
+  })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-
-  // CORS 
+// CORS 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -40,7 +49,6 @@ const userRoutes = require('./routes/user');
 
 app.use('/api/sauces', saucesRoutes); 
 app.use('/api/auth', userRoutes);
-
 
 // pour utiliser notre application express depuis notre serveur node
 module.exports = app;

@@ -1,4 +1,7 @@
-/* const passwordSchema = new passwordValidator();
+const passwordValidator = require('password-validator');
+
+// Create a schema
+const passwordSchema = new passwordValidator();
 
 // Add properties to it
 passwordSchema
@@ -21,4 +24,4 @@ console.log(passwordSchema.validate('joke', { list: true }));
 // => [ 'min', 'uppercase', 'digits' ]
 
 
-module.exports = passwordSchema; */
+module.exports = passwordSchema;

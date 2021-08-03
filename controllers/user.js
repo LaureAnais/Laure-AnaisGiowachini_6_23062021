@@ -1,16 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
-
-// Crypto sha512 
-// let hash = CryptoJS.SHA512("Message");
-
-// Crypto ou CryptoJS??
-let CryptoJS = require("crypto");
-
-let sha512 = CryptoJS.createHash('sha512').update('Projet6Piment').digest('hex');
-console.log(sha512); 
+const CryptoJS = require("crypto-js");
+require('dotenv').config();
 
 const passwordValidator = require('password-validator');
 
@@ -31,8 +23,9 @@ exports.signup = (req, res, next) => {
   if(passwordSchema.validate(req.body.password)){
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
+      const cryptEmail = CryptoJS.HmacSHA512(req.body.email, process.env.cleemail).toString();
       const user = new User({
-        email: req.body.email,
+        email: cryptEmail,
         password: hash,
       });
       user.save()
@@ -41,14 +34,17 @@ exports.signup = (req, res, next) => {
           res.status(400).json({ error })});
     })
     .catch(error => res.status(500).json({ error }));
-  } else {error => res.status(500).json({ error })
-  //  throw{error : 'mot de passe invalide'}
-  }  
+  } else { 
+       res.writeHead(400, '{"message":"Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces"}', {
+      'content-type': 'application/json'
+      });   
+  // {error => res.status(500).json({ error })
+   }  
 };
 
-
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email })
+  const cryptEmail = CryptoJS.HmacSHA512(req.body.email, process.env.cleemail).toString();
+  User.findOne({ email: cryptEmail })
     .then(user => {
       if (!user) {
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });

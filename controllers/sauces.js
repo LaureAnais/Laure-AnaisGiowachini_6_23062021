@@ -13,14 +13,11 @@ exports.getOneSauce = (req, res, next) => {
 
 // Création d'une sauce 
 exports.createSauce = (req, res, next) => {
-    // req.body.sauce est un objet javascript sous forme de chaîne de caractère (analyse de la chaîne puis transformation en objet)
     const sauceObject = JSON.parse(req.body.sauce);
     // identifiant généré automatiquement par MongoDB - doit être supprimé
     delete sauceObject._id;
     const sauce = new Sauce({
-        // opérateur spread : utilisé pour copier tous les éléments de req.body
         ...sauceObject,
-        // modifier la route POST - modifier l'URL des images enregistrées car elle ne vient plus depuis le frontend // en dynamique 
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         likes: 0,
         dislikes: 0,
@@ -75,15 +72,13 @@ exports.deleteSauce = (req, res, next) => {
 exports.likeDislike = (req, res, next) => {
   if (req.body.like === 1)
   // Création d'un like (avoir 1 sauce / 1 utilisateur (userId) / agrémenter la sauce d'un like)
-  // $inc : The inc operator increments a field by a specified value => like ++ 
     Sauce.updateOne({_id: req.params.id} , {$inc: {likes: 1 } , $set : {usersLiked: req.body.userId} })
     .then(() => res.status(200).json({ message: 'Sauce likée !'}))
     .catch((error) => {res.status(404).json({error});});
 
-   // Si l'utilisateur ne veut pas liker / Alors il veut dislike => ELSE IF 
+   // Si l'utilisateur ne veut pas liker / Alors il veut dislike  
    else if (req.body.like === -1) 
    // Création d'un dislike (on retire 1 like à 1 sauce)
-    // Dislike : -1 ou -- comme like est à 0 en 1er 
     Sauce.updateOne({_id: req.params.id} , {$inc: {dislikes: 1 } , $set: {usersDisliked: req.body.userId} })
     .then(() => res.status(200).json({ message: 'Un dislike ajouté :( '}))
     .catch((error) => {res.status(404).json({error});});

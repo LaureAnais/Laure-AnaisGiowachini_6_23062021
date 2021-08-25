@@ -38,7 +38,6 @@ exports.signup = (req, res, next) => {
        res.writeHead(400, '{"message":"Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces"}', {
       'content-type': 'application/json'
       });   
-  // {error => res.status(500).json({ error })
    }  
 };
 

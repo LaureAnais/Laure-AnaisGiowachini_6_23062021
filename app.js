@@ -30,8 +30,6 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json()); 
 
-// app.get doit nécessairement être après app.post pour ne pas bloquer app.post
-
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Utilisation helmet pour protéger l'application de certaines vulnérabilités du Web en configurant les en-têtes HTTP
